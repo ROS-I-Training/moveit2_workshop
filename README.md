@@ -12,7 +12,7 @@ sudo apt install python3-vcstool
 
 vcs import src --skip-existing --input src/moveit2_workshop/dependencies_rolling.repos
 
-vcs import src --skip-existing --input src/ur5e_cell/ur5e_workcell.repos
+vcs import src --skip-existing --input src/ur5e_cell/dependencies_rolling.repos
 
 source /opt/ros/rolling/setup.bash
 
