@@ -1,3 +1,17 @@
+# Copyright (c) Fraunhofer IPA
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import os
 
 from launch import LaunchDescription
@@ -7,6 +21,8 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 
+import yaml
+from yaml.loader import SafeLoader
 
 def generate_launch_description():
 
@@ -23,12 +39,17 @@ def generate_launch_description():
     params_aruco_node = os.path.join(
         moveit2_workshop_bringup_dir,
         'config',
-        'aruco_node.yaml')
+        'aruco_node_params.yaml')
 
     params_camera = os.path.join(
         moveit2_workshop_bringup_dir,
         'config',
-        'camera_params.yaml')
+        'camera_node_params.yaml')
+
+    params_camera_tf = os.path.join(
+        moveit2_workshop_bringup_dir,
+        'config',
+        'camera_tf.yaml')
 
     declare_aruco_node = Node(
         package="ros2_aruco",
@@ -40,7 +61,7 @@ def generate_launch_description():
         package="usb_cam",
         executable="usb_cam_node_exe",
         output="screen",
-        name="usb_camera",
+        name="camera_node",
         namespace = "/usb_camera",
         parameters=[params_camera])
     
@@ -51,10 +72,14 @@ def generate_launch_description():
         output="screen",
         condition=IfCondition(start_rviz))
 
+    with open(params_camera_tf) as cam_params:
+        data = yaml.load(cam_params, Loader=SafeLoader)
+        camera_tf = data["camera_tf"]
+
     declare_camera_tf = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        arguments=["1","0","0","0","0","0","world","usb_camera_link"],
+        arguments=camera_tf,
         output="screen")
     
     ld = LaunchDescription()

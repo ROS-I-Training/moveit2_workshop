@@ -6,5 +6,5 @@ repositories:
 
   ur5e_cell:
     type: git
-    url: https://github.com/ipa-rar/ur5e_cell/tree/main
+    url: https://github.com/ipa-rar/ur5e_cell
     version: main
