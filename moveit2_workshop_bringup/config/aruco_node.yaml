@@ -1,0 +1,8 @@
+/aruco_node:
+  ros__parameters:
+    aruco_dictionary_id: DICT_5X5_250
+    camera_frame: usb_camera_link
+    camera_info_topic: /usb_camera/camera_info
+    image_topic: /usb_camera/image_raw
+    marker_size: 0.047
+    use_sim_time: false

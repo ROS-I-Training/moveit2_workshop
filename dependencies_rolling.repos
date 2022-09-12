@@ -1,0 +1,10 @@
+repositories:
+  ros2_aruco:
+    type: git
+    url: https://github.com/ROS-I-Training/ros2_aruco
+    version: main
+
+  ur5e_cell:
+    type: git
+    url: https://github.com/ipa-rar/ur5e_cell/tree/main
+    version: main
