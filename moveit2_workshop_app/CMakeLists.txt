@@ -20,8 +20,20 @@ ament_target_dependencies(app_simple
                             rclcpp 
                             moveit_ros_planning_interface)
 
+
+add_executable(app_marker 
+      src/app_marker.cpp)
+target_include_directories(app_marker 
+                            PUBLIC
+                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                            $<INSTALL_INTERFACE:include>)
+ament_target_dependencies(app_marker 
+                            rclcpp 
+                            moveit_ros_planning_interface)
+
 install(TARGETS
   app_simple
+  app_marker
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

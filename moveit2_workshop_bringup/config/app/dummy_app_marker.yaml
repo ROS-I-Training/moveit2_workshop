@@ -1,0 +1,5 @@
+/app_simple:
+  ros__parameters:
+    planning_group: "panda_arm" # All target poses are planned w.r.t the base_link frame defined for this group in the SRDF.
+    marker1_frame: "marker_1"
+    marker2_frame: "marker_2"
