@@ -39,8 +39,12 @@ ros2 launch moveit2_workshop_bringup marker_detection.launch.py
 
 To start a dummy test for the applications using panda demo launch:   
 Simple app:   
-```
+```bash
 ros2 launch moveit2_workshop_bringup dummy_app_simple.launch.py
+```
+Marker app (has static TFs for the markers in the launch):
+```bash
+ros2 launch moveit2_workshop_bringup dummy_app_marker.launch.py
 ```
 
 To start the full demo including marker detection, robot driver, moveit, rviz and demo application:
@@ -57,6 +61,12 @@ ros2 launch moveit2_workshop_bringup full_demo.launch.py
 
 A very simple application that moves to two parametrised poses in cartesian space. These pose values are read from a parameter file, see below.
 
+### Marker Application
+
+`moveit2_workshop_app/src/app_simple.cpp`
+
+Reads poses of two aruco markers from the TF tree and moves above each in a sequence. The aruco pose detection needs to be running for this to work.
+
 ## Configuration
 
 ### Configuring the marker detection
@@ -70,4 +80,5 @@ Following configs are placed in the `moveit2_workshop_bringup/config/marker_dete
 ### Configuring the applications
 Following configs are placed in the `moveit2_workshop_bringup/config/app` folder:
 
-* **dummy_app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simpl` node. The poses are defined w.r.t the planning group's base_link frame.
+* **dummy_app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simple` node. The poses are defined w.r.t the planning group's base_link frame.
+* **dummy_app_marker.yaml**: Params to set the planning group, and names of the aruco marker frames for the `app_marker` node. 
