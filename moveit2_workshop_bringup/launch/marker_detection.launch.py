@@ -38,17 +38,17 @@ def generate_launch_description():
 
     params_aruco_node = os.path.join(
         moveit2_workshop_bringup_dir,
-        'config',
+        'config/marker_detection',
         'aruco_node_params.yaml')
 
     params_camera = os.path.join(
         moveit2_workshop_bringup_dir,
-        'config',
+        'config/marker_detection',
         'camera_node_params.yaml')
 
     params_camera_tf = os.path.join(
         moveit2_workshop_bringup_dir,
-        'config',
+        'config/marker_detection',
         'camera_tf.yaml')
 
     declare_aruco_node = Node(
@@ -68,7 +68,7 @@ def generate_launch_description():
     declare_rviz_node = Node(
         package="rviz2",
         executable="rviz2",
-        arguments=['-d' + os.path.join(moveit2_workshop_bringup_dir, 'config', 'rviz.rviz')],
+        arguments=['-d' + os.path.join(moveit2_workshop_bringup_dir, 'config/marker_detection', 'rviz.rviz')],
         output="screen",
         condition=IfCondition(start_rviz))
 
