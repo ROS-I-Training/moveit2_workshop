@@ -37,17 +37,37 @@ To start the perception pipeline and test if Aruco markers work correctly:
 ros2 launch moveit2_workshop_bringup marker_detection.launch.py
 ```
 
+To start a dummy test for the applications using panda demo launch:   
+Simple app:   
+```
+ros2 launch moveit2_workshop_bringup dummy_app_simple.launch.py
+```
+
 To start the full demo including marker detection, robot driver, moveit, rviz and demo application:
 
 ```bash
 ros2 launch moveit2_workshop_bringup full_demo.launch.py
 ``` 
 
+## Demo Applications
+
+### Simple Application
+
+`moveit2_workshop_app/src/app_simple.cpp`
+
+A very simple application that moves to two parametrised poses in cartesian space. These pose values are read from a parameter file, see below.
+
 ## Configuration
 
-Following configs are placed in the `moveit2_workshop_bringup/config` folder:
+### Configuring the marker detection
+Following configs are placed in the `moveit2_workshop_bringup/config/marker_detection` folder:
 
 * **aruco_node_params.yaml**: Params used by `aruco_ros2` node, including camera topics, marker size and TF frame name.
 * **camera_node_params.yaml**: Params used by `usb_cam` node, including camera source, image properties and link to calibration.
 * **camera_info.yaml**: Camera calibration data, published in the `camera_info` topics by the `usb_cam` node.
 * **camera_tf.yaml**: Contains positional calibration of the camera mount. Update if camera is moved.
+
+### Configuring the applications
+Following configs are placed in the `moveit2_workshop_bringup/config/app` folder:
+
+* **dummy_app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simpl` node. The poses are defined w.r.t the planning group's base_link frame.

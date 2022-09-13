@@ -1,0 +1,5 @@
+/app_simple:
+  ros__parameters:
+    planning_group: "panda_arm" # All target poses are planned w.r.t the base_link frame defined for this group in the SRDF.
+    target1_pose:  [0.5, 0.2, 0.2, 1.0, 0.0, 0.0, 0.0 ] # geometry_msgs/msg/Pose position and orientation values
+    target2_pose: [0.5, -0.2, 0.2, 1.0, 0.0, 0.0, 0.0 ] # geometry_msgs/msg/Pose position and orientation values
