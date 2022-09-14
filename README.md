@@ -63,7 +63,7 @@ A very simple application that moves to two parametrised poses in cartesian spac
 
 ### Marker Application
 
-`moveit2_workshop_app/src/app_simple.cpp`
+`moveit2_workshop_app/src/app_marker.cpp`
 
 Reads poses of two aruco markers from the TF tree and moves above each in a sequence. The aruco pose detection needs to be running for this to work.
 
