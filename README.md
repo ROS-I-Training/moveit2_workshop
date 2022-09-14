@@ -12,7 +12,7 @@ sudo apt install python3-vcstool
 
 vcs import src --skip-existing --input src/moveit2_workshop/dependencies_rolling.repos
 
-vcs import src --skip-existing --input src/ur5e_cell/ur5e_workcell.repos
+vcs import src --skip-existing --input src/ur5e_cell/dependencies_rolling.repos
 
 source /opt/ros/rolling/setup.bash
 
@@ -31,14 +31,18 @@ source install/local_setup,bash
 
 ## Bringup
 
-To start the perception pipeline and test if Aruco markers work correctly:
+### Devices
 
+To start only the perception pipeline and test if Aruco markers work correctly:
 ```bash
 ros2 launch moveit2_workshop_bringup marker_detection.launch.py
 ```
 
-To start a dummy test for the applications using panda demo launch:   
-Simple app:   
+### Panda Demo Application
+
+To start demos of the applications on Panda rviz only (no real robot)
+
+Simple app:
 ```bash
 ros2 launch moveit2_workshop_bringup dummy_app_simple.launch.py
 ```
@@ -47,23 +51,37 @@ Marker app (has static TFs for the markers in the launch):
 ros2 launch moveit2_workshop_bringup dummy_app_marker.launch.py
 ```
 
-To start the full demo including marker detection, robot driver, moveit, rviz and demo application:
+### UR5e Cell
 
+Start the cell in one terminal first. This brings up the modified UR5e robot driver and its moveit pipeline.
+```
+ros2 launch ur5e_cell_bringup ur5e_cell_bringup.launch.py
+```
+Remember to start the `External Control` program on the UR5e teach pendant.
+
+Then start one of the applications in another terminal.
+
+Simple app:
 ```bash
-ros2 launch moveit2_workshop_bringup full_demo.launch.py
-``` 
+ros2 launch moveit2_workshop_bringup ur5e_cell_app_simple.launch.py
+```
 
-## Demo Applications
+Marker app (also launches marker detection pipeline):
+```bash
+ros2 launch moveit2_workshop_bringup ur5e_cell_app_marker.launch.py
+```
 
-### Simple Application
+## Applications
+
+### Simple App
 
 `moveit2_workshop_app/src/app_simple.cpp`
 
 A very simple application that moves to two parametrised poses in cartesian space. These pose values are read from a parameter file, see below.
 
-### Marker Application
+### Marker App
 
-`moveit2_workshop_app/src/app_simple.cpp`
+`moveit2_workshop_app/src/app_marker.cpp`
 
 Reads poses of two aruco markers from the TF tree and moves above each in a sequence. The aruco pose detection needs to be running for this to work.
 
@@ -78,7 +96,8 @@ Following configs are placed in the `moveit2_workshop_bringup/config/marker_dete
 * **camera_tf.yaml**: Contains positional calibration of the camera mount. Update if camera is moved.
 
 ### Configuring the applications
-Following configs are placed in the `moveit2_workshop_bringup/config/app` folder:
+For the Panda demo, configs are placed in `moveit2_workshop_bringup/config/app/panda`.
+For the UR5e Cell, configs are placed in `moveit2_workshop_bringup/config/app/ur5e_cell`.
 
-* **dummy_app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simple` node. The poses are defined w.r.t the planning group's base_link frame.
-* **dummy_app_marker.yaml**: Params to set the planning group, and names of the aruco marker frames for the `app_marker` node. 
+* **app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simple` node. The poses are defined w.r.t the planning group's base_link frame.
+* **app_marker.yaml**: Params to set the planning group, and names of the aruco marker frames for the `app_marker` node.

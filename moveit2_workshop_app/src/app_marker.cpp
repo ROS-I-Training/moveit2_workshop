@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
     geometry_msgs::msg::Pose target1_pose;
     target1_pose.position.x = transformStamped.transform.translation.x;
     target1_pose.position.y = transformStamped.transform.translation.y;
-    target1_pose.position.z = transformStamped.transform.translation.z + 0.5;
+    target1_pose.position.z = transformStamped.transform.translation.z + 0.25;
     target1_pose.orientation.x = 1.0;
     target1_pose.orientation.y = 0.0;
     target1_pose.orientation.z = 0.0;
@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
     geometry_msgs::msg::Pose target2_pose;
     target2_pose.position.x = transformStamped.transform.translation.x;
     target2_pose.position.y = transformStamped.transform.translation.y;
-    target2_pose.position.z = transformStamped.transform.translation.z + 0.5;
+    target2_pose.position.z = transformStamped.transform.translation.z + 0.25;
     target2_pose.orientation.x = 1.0;
     target2_pose.orientation.y = 0.0;
     target2_pose.orientation.z = 0.0;

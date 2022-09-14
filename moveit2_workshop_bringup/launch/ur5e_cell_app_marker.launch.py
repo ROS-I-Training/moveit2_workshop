@@ -24,24 +24,24 @@ def generate_launch_description():
 
     moveit2_workshop_bringup_dir = get_package_share_directory('moveit2_workshop_bringup')
 
-    params_dummy_app_simple_node = os.path.join(
+    params_dummy_app_marker_node = os.path.join(
         moveit2_workshop_bringup_dir,
-        'config/app/panda',
-        'app_simple.yaml')
+        'config/app/ur5e_cell',
+        'app_marker.yaml')
 
     declare_app_node = Node(
         package="moveit2_workshop_app",
-        executable="app_simple",
+        executable="app_marker",
         output="screen",
-        parameters = [params_dummy_app_simple_node])
+        parameters = [params_dummy_app_marker_node]
+        )
 
-    include_panda_demo = IncludeLaunchDescription(
+    include_marker_detection = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(moveit2_workshop_bringup_dir,'launch/includes', 'panda_demo.launch.py')))
-
+            os.path.join(moveit2_workshop_bringup_dir,'launch/includes', 'marker_detection.launch.py')))
     ld = LaunchDescription()
 
-    ld.add_action(include_panda_demo)
+    ld.add_action(include_marker_detection)
     ld.add_action(declare_app_node)
 
     return ld

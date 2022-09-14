@@ -17,8 +17,6 @@ import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
@@ -26,7 +24,7 @@ def generate_launch_description():
 
     params_dummy_app_simple_node = os.path.join(
         moveit2_workshop_bringup_dir,
-        'config/app/panda',
+        'config/app/ur5e_cell',
         'app_simple.yaml')
 
     declare_app_node = Node(
@@ -35,13 +33,8 @@ def generate_launch_description():
         output="screen",
         parameters = [params_dummy_app_simple_node])
 
-    include_panda_demo = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(moveit2_workshop_bringup_dir,'launch/includes', 'panda_demo.launch.py')))
-
     ld = LaunchDescription()
 
-    ld.add_action(include_panda_demo)
     ld.add_action(declare_app_node)
 
     return ld
