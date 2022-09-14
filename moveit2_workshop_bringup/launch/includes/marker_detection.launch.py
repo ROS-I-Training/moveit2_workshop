@@ -56,7 +56,7 @@ def generate_launch_description():
         executable="aruco_node",
         output="screen",
         parameters = [params_aruco_node])
-    
+
     declare_usb_cam_node = Node(
         package="usb_cam",
         executable="usb_cam_node_exe",
@@ -64,7 +64,7 @@ def generate_launch_description():
         name="camera_node",
         namespace = "/usb_camera",
         parameters=[params_camera])
-    
+
     declare_rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -81,7 +81,7 @@ def generate_launch_description():
         executable="static_transform_publisher",
         arguments=camera_tf,
         output="screen")
-    
+
     ld = LaunchDescription()
 
     ld.add_action(declare_arg_rviz)
@@ -90,5 +90,5 @@ def generate_launch_description():
     ld.add_action(declare_usb_cam_node)
     ld.add_action(declare_rviz_node)
     ld.add_action(declare_camera_tf)
-    
+
     return ld

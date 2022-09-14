@@ -26,7 +26,7 @@ def generate_launch_description():
 
     params_dummy_app_marker_node = os.path.join(
         moveit2_workshop_bringup_dir,
-        'config/app/panda',
+        'config/app/ur5e_cell',
         'app_marker.yaml')
 
     declare_app_node = Node(
@@ -36,30 +36,12 @@ def generate_launch_description():
         parameters = [params_dummy_app_marker_node]
         )
 
-    marker1_tf_node = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="static_transform_publisher",
-        output="log",
-        arguments=["0.5", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "marker_1"],
-    )
-
-    marker2_tf_node = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        name="static_transform_publisher",
-        output="log",
-        arguments=["-0.5", "0.0", "0.0", "0.0", "0.0", "0.0", "world", "marker_2"],
-    )
-
-    include_panda_demo = IncludeLaunchDescription(
+    include_marker_detection = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(moveit2_workshop_bringup_dir,'launch/includes', 'panda_demo.launch.py')))
+            os.path.join(moveit2_workshop_bringup_dir,'launch/includes', 'marker_detection.launch.py')))
     ld = LaunchDescription()
 
-    ld.add_action(marker1_tf_node)
-    ld.add_action(marker2_tf_node)
-    ld.add_action(include_panda_demo)
+    ld.add_action(include_marker_detection)
     ld.add_action(declare_app_node)
 
     return ld
