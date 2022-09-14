@@ -31,13 +31,17 @@ source install/local_setup,bash
 
 ## Bringup
 
-To start the perception pipeline and test if Aruco markers work correctly:
+### Devices
 
+To start only the perception pipeline and test if Aruco markers work correctly:
 ```bash
 ros2 launch moveit2_workshop_bringup marker_detection.launch.py
 ```
 
-To start a dummy test for the applications using panda demo launch:   
+### Panda Demo Application
+
+To start demos of the applications on Panda rviz only (no real robot)
+
 Simple app:   
 ```bash
 ros2 launch moveit2_workshop_bringup dummy_app_simple.launch.py
@@ -46,8 +50,9 @@ Marker app (has static TFs for the markers in the launch):
 ```bash
 ros2 launch moveit2_workshop_bringup dummy_app_marker.launch.py
 ```
+### UR5e Cell
 
-To start the full demo including marker detection, robot driver, moveit, rviz and demo application:
+To start the demo on the IPA326 UR5e Cell:
 
 ```bash
 ros2 launch moveit2_workshop_bringup full_demo.launch.py
@@ -78,7 +83,8 @@ Following configs are placed in the `moveit2_workshop_bringup/config/marker_dete
 * **camera_tf.yaml**: Contains positional calibration of the camera mount. Update if camera is moved.
 
 ### Configuring the applications
-Following configs are placed in the `moveit2_workshop_bringup/config/app` folder:
+For the Panda demo, configs are placed in `moveit2_workshop_bringup/config/app/panda`.
+For the UR5e Cell, configs are placed in `moveit2_workshop_bringup/config/app/ur5e_cell`.
 
-* **dummy_app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simple` node. The poses are defined w.r.t the planning group's base_link frame.
-* **dummy_app_marker.yaml**: Params to set the planning group, and names of the aruco marker frames for the `app_marker` node. 
+* **app_simple.yaml**: Params to set the planning group, and "pick" and "place" pose values for the `app_simple` node. The poses are defined w.r.t the planning group's base_link frame.
+* **app_marker.yaml**: Params to set the planning group, and names of the aruco marker frames for the `app_marker` node. 
