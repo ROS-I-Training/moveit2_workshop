@@ -85,35 +85,77 @@ int main(int argc, char * argv[])
     moveit::planning_interface::MoveGroupInterface::Plan plan;
     bool success;
 
+
+    move_group_interface.setStartStateToCurrentState();
+    // move_group_interface.setNamedTarget("up");
+    // success = static_cast<bool>(move_group_interface.plan(plan));
+    // move_group_interface.execute(plan);
+
+    move_group_interface.setNamedTarget("ready");
+    success = static_cast<bool>(move_group_interface.plan(plan));
+    move_group_interface.execute(plan);
+
+    target1_pose = move_group_interface.getCurrentPose().pose;
+    RCLCPP_WARN_STREAM(logger, "Current pose: " <<
+                                        target1_pose.position.x << " " << 
+                                        target1_pose.position.y << " " << 
+                                        target1_pose.position.z << " " << 
+                                        target1_pose.orientation.x << " " << 
+                                        target1_pose.orientation.y << " " << 
+                                        target1_pose.orientation.z << " " << 
+                                        target1_pose.orientation.w << " "
+                                    );
+
+    target1_pose.position.x += 0.1;
+
+    RCLCPP_WARN_STREAM(logger, "Target pose: " <<
+                                        target1_pose.position.x << " " << 
+                                        target1_pose.position.y << " " << 
+                                        target1_pose.position.z << " " << 
+                                        target1_pose.orientation.x << " " << 
+                                        target1_pose.orientation.y << " " << 
+                                        target1_pose.orientation.z << " " << 
+                                        target1_pose.orientation.w << " "
+                                    );
+    
     // target1 phase
     RCLCPP_WARN_STREAM(logger, "---------Plan target1---------");
     move_group_interface.setPoseTarget(target1_pose);
-    success = static_cast<bool>(move_group_interface.plan(plan));
-
+    for (int i=0; i<3; i++)
+    {   
+        RCLCPP_WARN_STREAM(logger, "Planning attempt " << i);
+        success = static_cast<bool>(move_group_interface.plan(plan));
+        if (success) break;
+    }
     if (success)
     {
         RCLCPP_WARN_STREAM(logger, "---------Execute target1---------");
-        move_group_interface.execute(plan);
+        for (int i=0; i<3; i++)
+        {   
+            RCLCPP_WARN_STREAM(logger, "Execution attempt " << i);
+            move_group_interface.execute(plan);
+            if (success) break;
+        }
     }
     else
     {
         RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
     }
 
-    // target2 phase
-    RCLCPP_WARN_STREAM(logger, "---------Plan target2---------");
-    move_group_interface.setPoseTarget(target2_pose);
-    success = static_cast<bool>(move_group_interface.plan(plan));
+    // // target2 phase
+    // RCLCPP_WARN_STREAM(logger, "---------Plan target2---------");
+    // move_group_interface.setPoseTarget(target2_pose);
+    // success = static_cast<bool>(move_group_interface.plan(plan));
 
-    if (success)
-    {
-        RCLCPP_WARN_STREAM(logger, "---------Execute target2---------");
-        move_group_interface.execute(plan);
-    }
-    else
-    {
-        RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
-    }
+    // if (success)
+    // {
+    //     RCLCPP_WARN_STREAM(logger, "---------Execute target2---------");
+    //     move_group_interface.execute(plan);
+    // }
+    // else
+    // {
+    //     RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
+    // }
 
     // Shutdown ROS
     rclcpp::shutdown();
