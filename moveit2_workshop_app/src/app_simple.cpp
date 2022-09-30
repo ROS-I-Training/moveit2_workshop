@@ -28,6 +28,11 @@ int main(int argc, char * argv[])
     "app_simple",
     rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)
     );
+    // We spin up a SingleThreadedExecutor for the current state monitor to get information
+  // about the robot's state.  ##This solved get cuurent pose issue**
+    rclcpp::executors::SingleThreadedExecutor executor;
+    executor.add_node(node);
+    std::thread([&executor]() { executor.spin(); }).detach();
 
     auto const logger = rclcpp::get_logger("app_simple");
     RCLCPP_WARN_STREAM(logger, "---------Starting simple application---------");
@@ -78,84 +83,60 @@ int main(int argc, char * argv[])
     target2_pose.orientation.z = target2_pose_vals[5];
     target2_pose.orientation.w = target2_pose_vals[6];
 
+    
+    
     // Create the MoveIt MoveGroup Interface
     using moveit::planning_interface::MoveGroupInterface;
+
     auto move_group_interface = MoveGroupInterface(node, planning_group);
 
     moveit::planning_interface::MoveGroupInterface::Plan plan;
     bool success;
 
-
-    move_group_interface.setStartStateToCurrentState();
-    // move_group_interface.setNamedTarget("up");
-    // success = static_cast<bool>(move_group_interface.plan(plan));
-    // move_group_interface.execute(plan);
-
-    move_group_interface.setNamedTarget("ready");
-    success = static_cast<bool>(move_group_interface.plan(plan));
-    move_group_interface.execute(plan);
-
-    target1_pose = move_group_interface.getCurrentPose().pose;
-    RCLCPP_WARN_STREAM(logger, "Current pose: " <<
-                                        target1_pose.position.x << " " << 
-                                        target1_pose.position.y << " " << 
-                                        target1_pose.position.z << " " << 
-                                        target1_pose.orientation.x << " " << 
-                                        target1_pose.orientation.y << " " << 
-                                        target1_pose.orientation.z << " " << 
-                                        target1_pose.orientation.w << " "
-                                    );
-
-    target1_pose.position.x += 0.1;
-
-    RCLCPP_WARN_STREAM(logger, "Target pose: " <<
-                                        target1_pose.position.x << " " << 
-                                        target1_pose.position.y << " " << 
-                                        target1_pose.position.z << " " << 
-                                        target1_pose.orientation.x << " " << 
-                                        target1_pose.orientation.y << " " << 
-                                        target1_pose.orientation.z << " " << 
-                                        target1_pose.orientation.w << " "
-                                    );
-    
     // target1 phase
     RCLCPP_WARN_STREAM(logger, "---------Plan target1---------");
+    move_group_interface.setStartStateToCurrentState();
+    std::cout << "getCurrentState: " << *move_group_interface.getCurrentState() << std::endl;
+    move_group_interface.setStartState(*move_group_interface.getCurrentState());
+
+    //move_group_interface.setPlannerId("OMPL");
+
     move_group_interface.setPoseTarget(target1_pose);
-    for (int i=0; i<3; i++)
-    {   
-        RCLCPP_WARN_STREAM(logger, "Planning attempt " << i);
-        success = static_cast<bool>(move_group_interface.plan(plan));
-        if (success) break;
-    }
+    success = static_cast<bool>(move_group_interface.plan(plan));
+
     if (success)
-    {
+    {   
+        std::cout<<"Enter the confirm before execution";
+        std::string confirm;
+        std::cin>>confirm;
         RCLCPP_WARN_STREAM(logger, "---------Execute target1---------");
-        for (int i=0; i<3; i++)
-        {   
-            RCLCPP_WARN_STREAM(logger, "Execution attempt " << i);
-            move_group_interface.execute(plan);
-            if (success) break;
-        }
+        move_group_interface.execute(plan);
     }
     else
     {
         RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
     }
+    std::cout<<"Enter the confirmation";
+    std::string confirm;
+    std::cin>>confirm;
 
-    // // target2 phase
-    // RCLCPP_WARN_STREAM(logger, "---------Plan target2---------");
-    // move_group_interface.setPoseTarget(target2_pose);
-    // success = static_cast<bool>(move_group_interface.plan(plan));
+    // target2 phase
+    RCLCPP_WARN_STREAM(logger, "---------Plan target2---------");
+    move_group_interface.setPoseTarget(target2_pose);
+    success = static_cast<bool>(move_group_interface.plan(plan));
 
-    // if (success)
-    // {
-    //     RCLCPP_WARN_STREAM(logger, "---------Execute target2---------");
-    //     move_group_interface.execute(plan);
-    // }
-    // else
-    // {
-    //     RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
-    // }
+    if (success)
+    {
+        std::cout<<"Enter the confirm before execution";
+        std::string confirm;
+        std::cin>>confirm;
+        RCLCPP_WARN_STREAM(logger, "---------Execute target2---------");
+        move_group_interface.execute(plan);
+    }
+    else
+    {
+        RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
+    }
 
     // Shutdown ROS
     rclcpp::shutdown();
