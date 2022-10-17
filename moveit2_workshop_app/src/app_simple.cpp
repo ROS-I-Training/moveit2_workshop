@@ -20,24 +20,25 @@
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <geometry_msgs/msg/pose.hpp>
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
     // Initialize ROS and create the Node
     rclcpp::init(argc, argv);
     auto const node = std::make_shared<rclcpp::Node>(
-    "app_simple",
-    rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)
-    );
+        "app_simple",
+        rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
     // We spin up a SingleThreadedExecutor for the current state monitor to get information
-  // about the robot's state.  ##This solved get cuurent pose issue**
+    // about the robot's state.  ##This solved get cuurent pose issue**
     rclcpp::executors::SingleThreadedExecutor executor;
     executor.add_node(node);
-    std::thread([&executor]() { executor.spin(); }).detach();
+    std::thread([&executor]()
+                { executor.spin(); })
+        .detach();
 
     auto const logger = rclcpp::get_logger("app_simple");
     RCLCPP_WARN_STREAM(logger, "---------Starting simple application---------");
 
-    // Get parameters. 
+    // Get parameters.
     // No need to declare first since NodeOptions is instructed to automatically declare.
     std::string planning_group = node->get_parameter("planning_group").as_string();
     std::vector<double> target1_pose_vals = node->get_parameter("target1_pose").as_double_array();
@@ -45,23 +46,23 @@ int main(int argc, char * argv[])
 
     RCLCPP_WARN_STREAM(logger, "---------");
     RCLCPP_WARN_STREAM(logger, "planning_group: " << planning_group);
-    RCLCPP_WARN_STREAM(logger, "target1_pose_vals: " 
-                                    << target1_pose_vals[0] << " "
-                                    << target1_pose_vals[1] << " "
-                                    << target1_pose_vals[2] << " "
-                                    << target1_pose_vals[3] << " "
-                                    << target1_pose_vals[4] << " "
-                                    << target1_pose_vals[5] << " "
-                                    << target1_pose_vals[6] << " ");
+    RCLCPP_WARN_STREAM(logger, "target1_pose_vals: "
+                                   << target1_pose_vals[0] << " "
+                                   << target1_pose_vals[1] << " "
+                                   << target1_pose_vals[2] << " "
+                                   << target1_pose_vals[3] << " "
+                                   << target1_pose_vals[4] << " "
+                                   << target1_pose_vals[5] << " "
+                                   << target1_pose_vals[6] << " ");
 
-    RCLCPP_WARN_STREAM(logger, "target2_pose_vals: " 
-                                    << target2_pose_vals[0] << " "
-                                    << target2_pose_vals[1] << " "
-                                    << target2_pose_vals[2] << " "
-                                    << target2_pose_vals[3] << " "
-                                    << target2_pose_vals[4] << " "
-                                    << target2_pose_vals[5] << " "
-                                    << target2_pose_vals[6] << " ");
+    RCLCPP_WARN_STREAM(logger, "target2_pose_vals: "
+                                   << target2_pose_vals[0] << " "
+                                   << target2_pose_vals[1] << " "
+                                   << target2_pose_vals[2] << " "
+                                   << target2_pose_vals[3] << " "
+                                   << target2_pose_vals[4] << " "
+                                   << target2_pose_vals[5] << " "
+                                   << target2_pose_vals[6] << " ");
     RCLCPP_WARN_STREAM(logger, "---------");
 
     // Set target poses based on parameters
@@ -83,8 +84,6 @@ int main(int argc, char * argv[])
     target2_pose.orientation.z = target2_pose_vals[5];
     target2_pose.orientation.w = target2_pose_vals[6];
 
-    
-    
     // Create the MoveIt MoveGroup Interface
     using moveit::planning_interface::MoveGroupInterface;
 
@@ -99,16 +98,16 @@ int main(int argc, char * argv[])
     std::cout << "getCurrentState: " << *move_group_interface.getCurrentState() << std::endl;
     move_group_interface.setStartState(*move_group_interface.getCurrentState());
 
-    //move_group_interface.setPlannerId("OMPL");
+    // move_group_interface.setPlannerId("OMPL");
 
     move_group_interface.setPoseTarget(target1_pose);
     success = static_cast<bool>(move_group_interface.plan(plan));
 
     if (success)
-    {   
-        std::cout<<"Enter the confirm before execution";
+    {
+        std::cout << "Enter the confirm before execution";
         std::string confirm;
-        std::cin>>confirm;
+        std::cin >> confirm;
         RCLCPP_WARN_STREAM(logger, "---------Execute target1---------");
         move_group_interface.execute(plan);
     }
@@ -116,9 +115,9 @@ int main(int argc, char * argv[])
     {
         RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
     }
-    std::cout<<"Enter the confirmation";
+    std::cout << "Enter the confirmation";
     std::string confirm;
-    std::cin>>confirm;
+    std::cin >> confirm;
 
     // target2 phase
     RCLCPP_WARN_STREAM(logger, "---------Plan target2---------");
@@ -127,9 +126,9 @@ int main(int argc, char * argv[])
 
     if (success)
     {
-        std::cout<<"Enter the confirm before execution";
+        std::cout << "Enter the confirm before execution";
         std::string confirm;
-        std::cin>>confirm;
+        std::cin >> confirm;
         RCLCPP_WARN_STREAM(logger, "---------Execute target2---------");
         move_group_interface.execute(plan);
     }
