@@ -1,5 +1,5 @@
 /**:
   ros__parameters:
     planning_group: "arm" # All target poses are planned w.r.t the base_link frame defined for this group in the SRDF.
-    target1_pose:  [-0.195, 0.624, 0.407, 0.964, 0.267, -0.018, -0.005] # geometry_msgs/msg/Pose position and orientation values
-    target2_pose: [0.032, 0.551, 0.256, 0.964, 0.267, -0.018, -0.005 ] # geometry_msgs/msg/Pose position and orientation values
+    target1_pose:  [-0.4, -0.2, 1.2, 1.0, 0.0, 0.0, 0.0] # geometry_msgs/msg/Pose position and orientation values
+    target2_pose: [-0.4, 0.2, 1.2, 1.0, 0.0, 0.0, 0.0] # geometry_msgs/msg/Pose position and orientation values

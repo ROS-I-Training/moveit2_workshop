@@ -16,8 +16,14 @@
 #include <vector>
 #include <string>
 
+ 
+#define _USE_MATH_DEFINES
+ 
+#include <cmath>
+
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
+#include <moveit/kinematic_constraints/kinematic_constraint.h>
 #include <geometry_msgs/msg/pose.hpp>
 
 int main(int argc, char *argv[])
@@ -36,7 +42,6 @@ int main(int argc, char *argv[])
         .detach();
 
     auto const logger = rclcpp::get_logger("app_simple");
-    RCLCPP_WARN_STREAM(logger, "---------Starting simple application---------");
 
     // Get parameters.
     // No need to declare first since NodeOptions is instructed to automatically declare.
@@ -44,26 +49,8 @@ int main(int argc, char *argv[])
     std::vector<double> target1_pose_vals = node->get_parameter("target1_pose").as_double_array();
     std::vector<double> target2_pose_vals = node->get_parameter("target2_pose").as_double_array();
 
-    RCLCPP_WARN_STREAM(logger, "---------");
-    RCLCPP_WARN_STREAM(logger, "planning_group: " << planning_group);
-    RCLCPP_WARN_STREAM(logger, "target1_pose_vals: "
-                                   << target1_pose_vals[0] << " "
-                                   << target1_pose_vals[1] << " "
-                                   << target1_pose_vals[2] << " "
-                                   << target1_pose_vals[3] << " "
-                                   << target1_pose_vals[4] << " "
-                                   << target1_pose_vals[5] << " "
-                                   << target1_pose_vals[6] << " ");
-
-    RCLCPP_WARN_STREAM(logger, "target2_pose_vals: "
-                                   << target2_pose_vals[0] << " "
-                                   << target2_pose_vals[1] << " "
-                                   << target2_pose_vals[2] << " "
-                                   << target2_pose_vals[3] << " "
-                                   << target2_pose_vals[4] << " "
-                                   << target2_pose_vals[5] << " "
-                                   << target2_pose_vals[6] << " ");
-    RCLCPP_WARN_STREAM(logger, "---------");
+    moveit::core::VariableBounds bx, by, bz;
+    bx.position_bounded_ = by.position_bounded_ = bz.position_bounded_ = true;
 
     // Set target poses based on parameters
     geometry_msgs::msg::Pose target1_pose;
@@ -75,6 +62,8 @@ int main(int argc, char *argv[])
     target1_pose.orientation.z = target1_pose_vals[5];
     target1_pose.orientation.w = target1_pose_vals[6];
 
+    
+
     geometry_msgs::msg::Pose target2_pose;
     target2_pose.position.x = target2_pose_vals[0];
     target2_pose.position.y = target2_pose_vals[1];
@@ -84,57 +73,64 @@ int main(int argc, char *argv[])
     target2_pose.orientation.z = target2_pose_vals[5];
     target2_pose.orientation.w = target2_pose_vals[6];
 
+    RCLCPP_INFO(node->get_logger(), "Pose 1: %s", geometry_msgs::msg::to_yaml(target2_pose).c_str());
+
     // Create the MoveIt MoveGroup Interface
     using moveit::planning_interface::MoveGroupInterface;
 
     auto move_group_interface = MoveGroupInterface(node, planning_group);
 
     moveit::planning_interface::MoveGroupInterface::Plan plan;
-    bool success;
 
-    // target1 phase
-    RCLCPP_WARN_STREAM(logger, "---------Plan target1---------");
     move_group_interface.setStartStateToCurrentState();
-    std::cout << "getCurrentState: " << *move_group_interface.getCurrentState() << std::endl;
-    move_group_interface.setStartState(*move_group_interface.getCurrentState());
+    // move_group_interface.setPlanningPipelineId("ompl");
+    // move_group_interface.setPlannerId("RRTstarkConfigDefault");
+    move_group_interface.setPlanningPipelineId("pilz_industrial_motion_planner");
+    move_group_interface.setPlannerId("PTP");
 
-    // move_group_interface.setPlannerId("OMPL");
-
+    auto current_pose = move_group_interface.getCurrentPose();
+    RCLCPP_INFO(node->get_logger(), "Current Pose: %s", geometry_msgs::msg::to_yaml(current_pose).c_str());
+    RCLCPP_INFO(node->get_logger(), "Target Pose 1: %s", geometry_msgs::msg::to_yaml(target1_pose).c_str());
     move_group_interface.setPoseTarget(target1_pose);
-    success = static_cast<bool>(move_group_interface.plan(plan));
+    move_group_interface.allowReplanning(true);
+    move_group_interface.setNumPlanningAttempts(10);
+    move_group_interface.setPlanningTime(5.0);
 
-    if (success)
+    auto state = move_group_interface.getCurrentState();
+    auto success = move_group_interface.plan(plan);
+
+    if (success.val == 1)
     {
-        std::cout << "Enter the confirm before execution";
-        std::string confirm;
-        std::cin >> confirm;
-        RCLCPP_WARN_STREAM(logger, "---------Execute target1---------");
+        RCLCPP_INFO(node->get_logger(), "Successfully generated motion plan. Executing...");
         move_group_interface.execute(plan);
     }
     else
     {
-        RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
+        RCLCPP_INFO(node->get_logger(), "Failed generating motion plan. Exiting...");
+        rclcpp::shutdown();
+        return 0;
     }
-    std::cout << "Enter the confirmation";
-    std::string confirm;
-    std::cin >> confirm;
 
-    // target2 phase
-    RCLCPP_WARN_STREAM(logger, "---------Plan target2---------");
+    RCLCPP_INFO(node->get_logger(), "Current Pose: %s", geometry_msgs::msg::to_yaml(current_pose).c_str());
+    RCLCPP_INFO(node->get_logger(), "Target Pose 2: %s", geometry_msgs::msg::to_yaml(target2_pose).c_str());
+
+    move_group_interface.setStartStateToCurrentState();
     move_group_interface.setPoseTarget(target2_pose);
-    success = static_cast<bool>(move_group_interface.plan(plan));
+    move_group_interface.setPlanningPipelineId("pilz_industrial_motion_planner");
+    move_group_interface.setPlannerId("LIN");
 
-    if (success)
+    success = move_group_interface.plan(plan);
+
+    if (success.val == 1)
     {
-        std::cout << "Enter the confirm before execution";
-        std::string confirm;
-        std::cin >> confirm;
-        RCLCPP_WARN_STREAM(logger, "---------Execute target2---------");
+        RCLCPP_INFO(node->get_logger(), "Successfully generated motion plan. Executing...");
         move_group_interface.execute(plan);
     }
     else
     {
-        RCLCPP_ERROR_STREAM(logger, "---------Planning failed---------");
+        RCLCPP_INFO(node->get_logger(), "Failed generating motion plan. Exiting...");
+        rclcpp::shutdown();
+        return 0;
     }
 
     // Shutdown ROS
